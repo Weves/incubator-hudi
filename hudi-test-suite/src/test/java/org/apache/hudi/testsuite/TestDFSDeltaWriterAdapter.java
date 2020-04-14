@@ -58,14 +58,14 @@ public class TestDFSDeltaWriterAdapter extends UtilitiesTestBase {
   }
 
   @AfterClass
-  public static void cleanupClass() throws Exception {
+  public static void cleanupClass() {
     UtilitiesTestBase.cleanupClass();
   }
 
   @Before
   public void setup() throws Exception {
     super.setup();
-    schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS("hudi-test-suite-config/complex-source.avsc"),
+    schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS("hudi-test-suite-config", "complex-source.avsc"),
         jsc);
   }
 

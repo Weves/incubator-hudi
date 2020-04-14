@@ -61,7 +61,7 @@ public class SimpleWorkflowDagGenerator implements WorkflowDagGenerator {
     child1.addChildNode(child1OfChild1);
 
     List<Pair<String, Integer>> queryAndResult = new ArrayList<>();
-    queryAndResult.add(Pair.of("select " + "count(*) from testdb1.hive_trips group "
+    queryAndResult.add(Pair.of("select " + "count(*) from testdb1.table1 group "
         + "by rider having count(*) < 1", 0));
     DagNode child2OfChild1 = new HiveQueryNode(Config.newBuilder()
         .withHiveQueryAndResults(queryAndResult).withHiveLocal(true).build());

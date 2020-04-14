@@ -3,7 +3,7 @@ first_insert:
     record_size: 70000
     num_insert_partitions: 1
     repeat_count: 5
-    num_records_insert: 10000000
+    num_records_insert: 1000
   type: InsertNode
   deps: none
 second_insert:
@@ -11,7 +11,7 @@ second_insert:
     record_size: 70000
     num_insert_partitions: 1
     repeat_count: 5
-    num_records_insert: 10000000
+    num_records_insert: 10000
   deps: first_insert
   type: InsertNode
 third_insert:
@@ -19,7 +19,7 @@ third_insert:
     record_size: 70000
     num_insert_partitions: 1
     repeat_count: 2
-    num_records_insert: 300000
+    num_records_insert: 300
   deps: second_insert
   type: InsertNode
 first_rollback:
@@ -30,9 +30,9 @@ first_upsert:
   config:
     record_size: 70000
     num_insert_partitions: 1
-    num_records_insert: 300000
+    num_records_insert: 300
     repeat_count: 5
-    num_records_upsert: 100000
+    num_records_upsert: 100
     num_upsert_partitions: 10
   type: UpsertNode
   deps: first_rollback
@@ -60,9 +60,9 @@ second_upsert:
   config:
     record_size: 70000
     num_insert_partitions: 1
-    num_records_insert: 300000
+    num_records_insert: 300
     repeat_count: 5
-    num_records_upsert: 100000
+    num_records_upsert: 100
     num_upsert_partitions: 10
   type: UpsertNode
   deps: first_hive_query
@@ -77,6 +77,6 @@ second_hive_query:
       query1: "select count(*) from testdb1.table1 group by `_row_key` having count(*) > 1"
       result1: 0
       query2: "select count(*) from testdb1.table1"
-      result2: 22100000
+      result2: 22100
   type: HiveQueryNode
   deps: second_upsert
