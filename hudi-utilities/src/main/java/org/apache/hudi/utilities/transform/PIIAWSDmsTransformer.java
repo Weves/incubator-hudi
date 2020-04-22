@@ -29,11 +29,14 @@ import org.apache.spark.sql.SparkSession;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.HashSet;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import static org.apache.spark.sql.functions.lit;
 
@@ -63,30 +66,30 @@ public class PIIAWSDmsTransformer implements Transformer {
   /**
    * Load in the configuration files to know which columns to keep / remove.
    */
-  private void loadConfigs() {
+  private void loadConfigs() throws IOException, IllegalArgumentException, ParseException {
 
     // get DB / table names from the environment variables
-    try {
-      databaseName = System.getenv(DB_NAME_ENV);
-      tableName = System.getenv(TABLE_NAME_ENV);
-    } catch (Exception e) {
-      // there should be environment variables
-      e.printStackTrace();
-      System.exit(0);
+    Map<String, String> systemEnvironment = System.getenv();
+    if (!systemEnvironment.containsKey(DB_NAME_ENV) || !systemEnvironment.containsKey(TABLE_NAME_ENV)) {
+      throw new IllegalArgumentException("Missing database or table environment variables.");
+    } else {
+      databaseName = systemEnvironment.get(DB_NAME_ENV);
+      tableName = systemEnvironment.get(TABLE_NAME_ENV);
     }
 
     // load in config files
     JSONParser parser = new JSONParser();
     JSONObject allWhitelistObject = null;
     JSONObject databaseBlacklistObject = null;
+
+    // there should be config files describing both a whitelist and a blacklist
     try {
       allWhitelistObject = (JSONObject) parser.parse(new FileReader(WHITELIST_CONFIG_PATH));
       databaseBlacklistObject = (JSONObject) parser.parse(new FileReader(BLACKLIST_CONFIG_PATH));
-    } catch (Exception e) {
-      // there should be config files
-      e.printStackTrace();
-      System.exit(0);
+    } catch (ParseException e) {
+      throw e;
     }
+
 
     // get whitelist list for the table
     try {
@@ -101,12 +104,10 @@ public class PIIAWSDmsTransformer implements Transformer {
     }
 
     // get blacklist list for all tables
-    try {
+    if (!databaseBlacklistObject.containsKey(BLACKLIST_ENTRY)) {
+      throw new IllegalArgumentException("Missing list of permenantly blacklisted columns.");
+    } else {
       blacklistColumnNames = new HashSet<String>((List<String>)databaseBlacklistObject.get(BLACKLIST_ENTRY));
-    } catch (Exception e) {
-      // there should be a blacklist list
-      e.printStackTrace();
-      System.exit(0);
     }
 
   }
@@ -117,8 +118,14 @@ public class PIIAWSDmsTransformer implements Transformer {
 
     // load config files (table / db name, whitelisted / blacklisted column names)
     if (!configsLoaded) {
-      loadConfigs();
-      configsLoaded = true;
+      try {
+        loadConfigs();
+        configsLoaded = true;
+      } catch (Exception e) {
+        // end deltastreamer on fatal error
+        e.printStackTrace();
+        System.exit(0);
+      }
     }
 
     // add Op column
