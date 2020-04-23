@@ -31,7 +31,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
-import java.io.FileReader;
+// import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 
 import org.json.simple.JSONObject;
@@ -46,11 +48,11 @@ import static org.apache.spark.sql.functions.lit;
  */
 public class PIIAWSDmsTransformer implements Transformer {
 
-  private static final String DB_NAME_ENV = "DATABASE_NAME";
-  private static final String TABLE_NAME_ENV = "TABLE_NAME";
-  private static final String BLACKLIST_ENTRY = "COMMON_PII_COLS";
-  private static final String WHITELIST_CONFIG_PATH = "/Users/chris.weaver/Downloads/whitelist.json";
-  private static final String BLACKLIST_CONFIG_PATH = "/Users/chris.weaver/Downloads/blacklist.json";
+  public static final String DB_NAME_ENV = "DATABASE_NAME";
+  public static final String TABLE_NAME_ENV = "TABLE_NAME";
+  public static final String BLACKLIST_ENTRY = "COMMON_PII_COLS";
+  public static final String WHITELIST_CONFIG_PATH = "/whitelist.json";
+  public static final String BLACKLIST_CONFIG_PATH = "/blacklist.json";
 
   // private static final String[] HUDI_COLUMNS = {"_hoodie_commit_time", "_hoodie_commit_seqno",
   //                                               "_hoodie_record_key", "_hoodie_partition_path",
@@ -83,9 +85,15 @@ public class PIIAWSDmsTransformer implements Transformer {
     JSONObject databaseBlacklistObject = null;
 
     // there should be config files describing both a whitelist and a blacklist
+    InputStream whitelistStream = getClass().getResourceAsStream(WHITELIST_CONFIG_PATH);
+    InputStream blacklistStream = getClass().getResourceAsStream(BLACKLIST_CONFIG_PATH);
+    if (whitelistStream == null || blacklistStream == null) {
+      throw new IllegalArgumentException("Missing config resources");
+    }
+
     try {
-      allWhitelistObject = (JSONObject) parser.parse(new FileReader(WHITELIST_CONFIG_PATH));
-      databaseBlacklistObject = (JSONObject) parser.parse(new FileReader(BLACKLIST_CONFIG_PATH));
+      allWhitelistObject = (JSONObject) parser.parse(new InputStreamReader(whitelistStream));
+      databaseBlacklistObject = (JSONObject) parser.parse(new InputStreamReader(blacklistStream));
     } catch (ParseException e) {
       throw e;
     }
