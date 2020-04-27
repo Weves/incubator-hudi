@@ -1,0 +1,12 @@
+{
+  "default": {
+    "sanity_check": [
+      "bigint_check",
+      "large_string_check",
+      "byte_check",
+      "small_numeric_check",
+      "numeric_check",
+      "new_column"
+    ]
+  }
+}

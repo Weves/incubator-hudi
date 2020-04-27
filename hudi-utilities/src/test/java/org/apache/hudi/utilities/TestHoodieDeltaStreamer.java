@@ -527,7 +527,7 @@ public class TestHoodieDeltaStreamer extends UtilitiesTestBase {
       assertTrue(e.getMessage().contains("Please provide a valid schema provider class!"));
     }
   }
-  
+
   @Test
   public void testPayloadClassUpdate() throws Exception {
     String dataSetBasePath = dfsBasePath + "/test_dataset_mor";

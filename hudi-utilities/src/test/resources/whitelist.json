@@ -1,0 +1,9 @@
+{
+  "dummy_db": {
+    "dummy_table": [
+      "whitelisted",
+      "whitelisted_and_blacklisted",
+    ],
+    "dummy_table_empty": []
+  }
+}

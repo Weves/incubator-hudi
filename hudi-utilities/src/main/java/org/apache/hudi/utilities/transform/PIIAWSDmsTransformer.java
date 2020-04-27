@@ -20,7 +20,7 @@ package org.apache.hudi.utilities.transform;
 
 import org.apache.hudi.common.util.Option;
 import org.apache.hudi.common.util.TypedProperties;
-import org.apache.hudi.payload.CustomAWSDmsAvroPayload;
+// import org.apache.hudi.payload.CustomAWSDmsAvroPayload;
 
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
@@ -54,10 +54,7 @@ public class PIIAWSDmsTransformer implements Transformer {
   public static final String WHITELIST_CONFIG_PATH = "/whitelist.json";
   public static final String BLACKLIST_CONFIG_PATH = "/blacklist.json";
 
-  // private static final String[] HUDI_COLUMNS = {"_hoodie_commit_time", "_hoodie_commit_seqno",
-  //                                               "_hoodie_record_key", "_hoodie_partition_path",
-  //                                               "_hoodie_file_name", "update_timestamp"};
-  private static final String[] HUDI_COLUMNS = {"update_timestamp", "Op"};
+  public static final String[] HUDI_COLUMNS = {"update_timestamp", "Op"};
 
   private HashSet<String> whitelistColumnNames;
   private HashSet<String> blacklistColumnNames;
@@ -98,7 +95,6 @@ public class PIIAWSDmsTransformer implements Transformer {
       throw e;
     }
 
-
     // get whitelist list for the table
     try {
       JSONObject databaseWhitelistObject = (JSONObject) allWhitelistObject.get(databaseName);
@@ -138,9 +134,9 @@ public class PIIAWSDmsTransformer implements Transformer {
 
     // add Op column
     Option<String> opColumnOpt = Option.fromJavaOptional(
-        Arrays.stream(rowDataset.columns()).filter(c -> c.equals(CustomAWSDmsAvroPayload.OP_FIELD)).findFirst());
+        Arrays.stream(rowDataset.columns()).filter(c -> c.equals("Op")).findFirst());
     if (!opColumnOpt.isPresent()) {
-      rowDataset = rowDataset.withColumn(CustomAWSDmsAvroPayload.OP_FIELD, lit(""));
+      rowDataset = rowDataset.withColumn("Op", lit(""));
     }
 
     // Remove all columns that are always PII
