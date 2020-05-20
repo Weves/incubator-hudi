@@ -77,6 +77,13 @@
 
   <dependencies>
 
+    <!-- For reading config JSON for PIIAWSDmsTransformer -->
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
     <!-- Jetty -->
     <dependency>
       <!-- Needs to be at the top to ensure we get the correct dependency versions for jetty-server -->
@@ -335,6 +342,14 @@
       <groupId>${hive.groupid}</groupId>
       <artifactId>hive-exec</artifactId>
       <version>${hive.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--Used to test transformer which is dependent on system variables-->
+    <dependency>
+      <groupId>com.github.stefanbirkner</groupId>
+      <artifactId>system-rules</artifactId>
+      <version>1.19.0</version>
       <scope>test</scope>
     </dependency>
 

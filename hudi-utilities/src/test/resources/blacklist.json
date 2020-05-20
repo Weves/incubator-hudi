@@ -1,0 +1,6 @@
+{
+  "COMMON_PII_COLS": [
+    "blacklisted",
+    "whitelisted_and_blacklisted"
+  ]
+}
