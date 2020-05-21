@@ -107,7 +107,7 @@ public class HoodieDeltaStreamer implements Serializable {
 
   /**
    * Main method to start syncing
-   * 
+   *
    * @throws Exception
    */
   public void sync() throws Exception {
@@ -426,7 +426,7 @@ public class HoodieDeltaStreamer implements Serializable {
 
     /**
      * Callback to initialize write client and start compaction service if required
-     * 
+     *
      * @param writeClient HoodieWriteClient
      * @return
      */
@@ -510,7 +510,7 @@ public class HoodieDeltaStreamer implements Serializable {
 
     /**
      * Wait till outstanding pending compactions reduces to the passed in value
-     * 
+     *
      * @param numPendingCompactions Maximum pending compactions allowed
      * @throws InterruptedException
      */
@@ -527,7 +527,7 @@ public class HoodieDeltaStreamer implements Serializable {
 
     /**
      * Fetch Next pending compaction if available
-     * 
+     *
      * @return
      * @throws InterruptedException
      */

@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hudi.common.util.Option;
 import org.apache.hudi.common.util.TypedProperties;
@@ -46,8 +45,6 @@ import org.json.simple.parser.ParseException;
  */
 public class PIIAWSDmsTransformer implements Transformer {
 
-  public static final String DB_NAME_ENV = "DATABASE_NAME";
-  public static final String TABLE_NAME_ENV = "TABLE_NAME";
   public static final String BLACKLIST_ENTRY = "COMMON_PII_COLS";
   public static final String WHITELIST_CONFIG_PATH = "/whitelist.json";
   public static final String BLACKLIST_CONFIG_PATH = "/blacklist.json";
@@ -61,18 +58,31 @@ public class PIIAWSDmsTransformer implements Transformer {
   private boolean configsLoaded = false;
 
   /**
+   * Configs supported
+   */
+  static class Config {
+
+    private static final String DATABASE_NAME = "hoodie.deltastreamer.database";
+    private static final String TABLE_NAME = "hoodie.deltastreamer.table";
+  }
+
+  /**
    * Load in the configuration files to know which columns to keep / remove.
    */
-  private void loadConfigs() throws IOException, IllegalArgumentException, ParseException {
+  private void loadConfigs(TypedProperties properties) throws IOException, IllegalArgumentException, ParseException {
 
     // get DB / table names from the environment variables
-    Map<String, String> systemEnvironment = System.getenv();
-    if (!systemEnvironment.containsKey(DB_NAME_ENV) || !systemEnvironment.containsKey(TABLE_NAME_ENV)) {
-      throw new IllegalArgumentException("Missing database or table environment variables.");
-    } else {
-      databaseName = systemEnvironment.get(DB_NAME_ENV);
-      tableName = systemEnvironment.get(TABLE_NAME_ENV);
-    }
+    // Map<String, String> systemEnvironment = System.getenv();
+    // if (!systemEnvironment.containsKey(DB_NAME_ENV) || !systemEnvironment.containsKey(TABLE_NAME_ENV)) {
+    //   throw new IllegalArgumentException("Missing database or table environment variables.");
+    // } else {
+    //   databaseName = systemEnvironment.get(DB_NAME_ENV);
+    //   tableName = systemEnvironment.get(TABLE_NAME_ENV);
+    // }
+
+    // get DB / table names from the properties file
+    databaseName = properties.getString(Config.DATABASE_NAME);
+    tableName = properties.getString(Config.TABLE_NAME);
 
     // load in config files
     JSONParser parser = new JSONParser();
@@ -121,7 +131,7 @@ public class PIIAWSDmsTransformer implements Transformer {
     // load config files (table / db name, whitelisted / blacklisted column names)
     if (!configsLoaded) {
       try {
-        loadConfigs();
+        loadConfigs(properties);
         configsLoaded = true;
       } catch (Exception e) {
         // end deltastreamer on fatal error
